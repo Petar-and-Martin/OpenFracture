@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.TestTools;
-
+using System;
 [ExcludeFromCoverage]
 public class PlaneSlicer : MonoBehaviour
 {
     public float RotationSensitivity = 1f;
+    public float currentMagnitude;
+    public bool collided = false;
 
     public void OnTriggerStay(Collider collider)
     {
@@ -28,29 +30,29 @@ public class PlaneSlicer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Q))
-        {
-            this.transform.Rotate(Vector3.forward, RotationSensitivity, Space.Self);
-        }
-        if (Input.GetKey(KeyCode.E))
-        {
-            this.transform.Rotate(Vector3.forward, -RotationSensitivity, Space.Self);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        //Check for a match with the specified name on any GameObject that collides with your GameObject
+        // Debug.Log("Collision:" + collision.gameObject.name);
+        if (!collided)
         {
             var mesh = this.GetComponent<MeshFilter>().sharedMesh;
             var center = mesh.bounds.center;
             var extents = mesh.bounds.extents;
+            //   currentMagnitude = magnitude;
+            collided = true;
+
 
             extents = new Vector3(extents.x * this.transform.localScale.x,
                                   extents.y * this.transform.localScale.y,
                                   extents.z * this.transform.localScale.z);
-                                  
+
             // Cast a ray and find the nearest object
             RaycastHit[] hits = Physics.BoxCastAll(this.transform.position, extents, this.transform.forward, this.transform.rotation, extents.z);
-            
-            foreach(RaycastHit hit in hits)
+
+            foreach (RaycastHit hit in hits)
             {
                 var obj = hit.collider.gameObject;
                 var sliceObj = obj.GetComponent<Slice>();
@@ -62,5 +64,26 @@ public class PlaneSlicer : MonoBehaviour
                 }
             }
         }
+
     }
+
+    public void ReadyToCollide()
+    {
+        //yield return new WaitForSeconds(2);
+
+        collided = false;
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        ReadyToCollide();
+    }
+
+    void OnTriggernEnter(Collision collision)
+    {
+        //Check for a match with the specified name on any GameObject that collides with your GameObject
+        Debug.Log("Trigger:" + collision.gameObject.name);
+    }
+
+
 }
