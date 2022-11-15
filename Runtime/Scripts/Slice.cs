@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -8,16 +9,56 @@ public class Slice : MonoBehaviour
 {
     public SliceOptions sliceOptions;
     public CallbackOptions callbackOptions;
-
+    public GameObject objectToSpawn;
+    public Transform spawnPosition;
     /// <summary>
     /// The number of times this fragment has been re-sliced.
     /// </summary>
-    private int currentSliceCount;
+    public int currentSliceCount;
 
     /// <summary>
     /// Collector object that stores the produced fragments
     /// </summary>
     private GameObject fragmentRoot;
+    private int delay = 120;
+    private int destroyTimer = 480;
+
+
+
+    void Update()
+    {
+        if (currentSliceCount != 0 && delay == 0)
+        {
+            Vector3 scaleChange = new Vector3(this.transform.localScale.x * 0.025f, this.transform.localScale.y * 0.025f, this.transform.localScale.z * 0.025f);
+            this.transform.localScale -= scaleChange;
+        }
+        else if (delay != 0)
+        {
+            delay -= 1;
+        }
+
+
+        if ( destroyTimer == 0)
+        {
+            Vector3 scaleChange = new Vector3(this.transform.localScale.x * 0.025f, this.transform.localScale.y * 0.025f, this.transform.localScale.z * 0.025f);
+            this.transform.localScale -= scaleChange;
+        }
+        else if (destroyTimer != 0)
+        {
+            destroyTimer -= 1;
+        }
+
+        if (this.transform.localScale.x <= 0.01 || this.transform.localScale.y <= 0.01 || this.transform.localScale.z <= 0.01)
+        {
+           Destroy(gameObject);
+        }
+    }
+
+
+    void Splat()
+    {
+        Instantiate(objectToSpawn, spawnPosition.position, spawnPosition.rotation);
+    }
 
     /// <summary>
     /// Slices the attached mesh along the cut plane
@@ -28,7 +69,7 @@ public class Slice : MonoBehaviour
     {
         var mesh = this.GetComponent<MeshFilter>().sharedMesh;
 
-        if (mesh != null)
+        if (mesh != null && (this.currentSliceCount < this.sliceOptions.maxResliceCount))
         {
             // If the fragment root object has not yet been created, create it now
             if (this.fragmentRoot == null)
@@ -42,7 +83,7 @@ public class Slice : MonoBehaviour
                 this.fragmentRoot.transform.rotation = this.transform.rotation;
                 this.fragmentRoot.transform.localScale = Vector3.one;
             }
-            
+
             var sliceTemplate = CreateSliceTemplate();
             var sliceNormalLocal = this.transform.InverseTransformDirection(sliceNormalWorld);
             var sliceOriginLocal = this.transform.InverseTransformPoint(sliceOriginWorld);
@@ -53,7 +94,7 @@ public class Slice : MonoBehaviour
                              this.sliceOptions,
                              sliceTemplate,
                              this.fragmentRoot.transform);
-                    
+
             // Done with template, destroy it
             GameObject.Destroy(sliceTemplate);
 
@@ -67,7 +108,6 @@ public class Slice : MonoBehaviour
             }
         }
     }
-    
     /// <summary>
     /// Creates a template object which each fragment will derive from
     /// </summary>
@@ -96,7 +136,7 @@ public class Slice : MonoBehaviour
         fragmentCollider.convex = true;
         fragmentCollider.sharedMaterial = thisCollider.sharedMaterial;
         fragmentCollider.isTrigger = thisCollider.isTrigger;
-        
+
         // Copy rigid body properties to fragment
         var thisRigidBody = this.GetComponent<Rigidbody>();
         var fragmentRigidBody = obj.AddComponent<Rigidbody>();
@@ -105,17 +145,23 @@ public class Slice : MonoBehaviour
         fragmentRigidBody.drag = thisRigidBody.drag;
         fragmentRigidBody.angularDrag = thisRigidBody.angularDrag;
         fragmentRigidBody.useGravity = thisRigidBody.useGravity;
-    
+
         // If refracturing is enabled, create a copy of this component and add it to the template fragment object
-        if (this.sliceOptions.enableReslicing &&
-           (this.currentSliceCount < this.sliceOptions.maxResliceCount))
+        // if (this.sliceOptions.enableReslicing &&
+        //   (this.currentSliceCount < this.sliceOptions.maxResliceCount))
+        //{
+        //
+        //  }
+        CopySliceComponent(obj);
+        if (this.currentSliceCount < 1)
         {
-            CopySliceComponent(obj);
+            Splat();
         }
+
 
         return obj;
     }
-    
+
     /// <summary>
     /// Convenience method for copying this component to another component
     /// </summary>
