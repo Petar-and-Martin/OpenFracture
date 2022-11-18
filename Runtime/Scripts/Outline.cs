@@ -13,9 +13,6 @@ using UnityEngine;
 
 
 
-namespace OutlineNS {
-   // [DisallowMultipleComponent]
-
     public class Outline : MonoBehaviour
     {
         private static HashSet<Mesh> registeredMeshes = new HashSet<Mesh>();
@@ -349,4 +346,4 @@ namespace OutlineNS {
             }
         }
     }
-}
+
