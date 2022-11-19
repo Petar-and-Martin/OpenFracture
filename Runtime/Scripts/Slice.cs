@@ -11,6 +11,12 @@ public class Slice : MonoBehaviour
     public CallbackOptions callbackOptions;
     public GameObject objectToSpawn;
     public Transform spawnPosition;
+    public GameObject miss;
+    public GameObject good;
+    public GameObject perfect;
+    public GameObject message;
+
+
     /// <summary>
     /// The number of times this fragment has been re-sliced.
     /// </summary>
@@ -22,8 +28,13 @@ public class Slice : MonoBehaviour
     private GameObject fragmentRoot;
     private int delay = 120;
     private int destroyTimer = 480;
+    private ScoreCollision missScript;
 
-
+    void Start()
+    {
+        missScript = miss.GetComponent<ScoreCollision>();
+       
+    }
 
     void Update()
     {
@@ -52,6 +63,11 @@ public class Slice : MonoBehaviour
         {
            Destroy(gameObject);
         }
+
+    if (missScript.active)
+    {
+        Debug.Log("miss");
+    }
     }
 
 
@@ -68,6 +84,30 @@ public class Slice : MonoBehaviour
     public void ComputeSlice(Vector3 sliceNormalWorld, Vector3 sliceOriginWorld)
     {
         var mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        var goodScript = good.GetComponent<ScoreCollision>();
+        var perfectScript = perfect.GetComponent<ScoreCollision>();
+
+        if (perfectScript.active)
+        {
+            Debug.Log("perfect");
+            var objText = Instantiate(message, spawnPosition.position, spawnPosition.rotation);
+            var mText = objText.GetComponent<TextMeshPro>();
+            mText.text = "Perfect";
+        } else if (goodScript.active)
+        {
+            Debug.Log("good");
+            var objText = Instantiate(message, spawnPosition.position, spawnPosition.rotation);
+            var mText = objText.GetComponent<TextMeshPro>();
+            mText.text = "Good";
+        }
+        else
+        {
+            Debug.Log("strife");
+            var objText = Instantiate(message, spawnPosition.position, spawnPosition.rotation);
+            var mText = objText.GetComponent<TextMeshPro>();
+            mText.text = "Strife";
+        }
+
 
         if (mesh != null && (this.currentSliceCount < this.sliceOptions.maxResliceCount))
         {
