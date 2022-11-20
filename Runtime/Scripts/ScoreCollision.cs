@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class ScoreCollision : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+
+    public bool active = false;
 
     // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter()
     {
-        
+        active = true;
     }
 }
