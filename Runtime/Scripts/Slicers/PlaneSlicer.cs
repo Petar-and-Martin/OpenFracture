@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
+
 [ExcludeFromCoverage]
 public class PlaneSlicer : MonoBehaviour
 {
@@ -36,8 +37,13 @@ public class PlaneSlicer : MonoBehaviour
     {
         //Check for a match with the specified name on any GameObject that collides with your GameObject
         // Debug.Log("Collision:" + collision.gameObject.name);
-        if (!collided)
+        var force = (collision.impulse / Time.fixedDeltaTime).magnitude;
+        //if (collision.gameObject.tag == "Fruit") Debug.Log("Force applied: " + (collision.impulse / Time.fixedDeltaTime).magnitude + " " + collision.gameObject.tag);
+
+        if (!collided )
         {
+            if (collision.gameObject.tag == "Fruit") Debug.Log("Enough: " + (collision.impulse / Time.fixedDeltaTime).magnitude + " " + collision.gameObject.tag);
+
             var mesh = this.GetComponent<MeshFilter>().sharedMesh;
             var center = mesh.bounds.center;
             var extents = mesh.bounds.extents;
