@@ -15,8 +15,6 @@ public class Slice : MonoBehaviour
     public GameObject good;
     public GameObject perfect;
     public GameObject message;
-
-
     /// <summary>
     /// The number of times this fragment has been re-sliced.
     /// </summary>
@@ -28,13 +26,8 @@ public class Slice : MonoBehaviour
     private GameObject fragmentRoot;
     private int delay = 120;
     private int destroyTimer = 480;
-    private ScoreCollision missScript;
 
-    void Start()
-    {
-        missScript = miss.GetComponent<ScoreCollision>();
-       
-    }
+
 
     void Update()
     {
@@ -49,7 +42,7 @@ public class Slice : MonoBehaviour
         }
 
 
-        if ( destroyTimer == 0)
+        if (destroyTimer == 0)
         {
             Vector3 scaleChange = new Vector3(this.transform.localScale.x * 0.025f, this.transform.localScale.y * 0.025f, this.transform.localScale.z * 0.025f);
             this.transform.localScale -= scaleChange;
@@ -61,13 +54,8 @@ public class Slice : MonoBehaviour
 
         if (this.transform.localScale.x <= 0.01 || this.transform.localScale.y <= 0.01 || this.transform.localScale.z <= 0.01)
         {
-           Destroy(gameObject);
+            Destroy(gameObject);
         }
-
-    if (missScript.active)
-    {
-        Debug.Log("miss");
-    }
     }
 
 
@@ -83,32 +71,29 @@ public class Slice : MonoBehaviour
     /// <param name="sliceOriginWorld">The cut plane origin in world coordinates.</param>
     public void ComputeSlice(Vector3 sliceNormalWorld, Vector3 sliceOriginWorld)
     {
-        var mesh = this.GetComponent<MeshFilter>().sharedMesh;
+        /*
         var goodScript = good.GetComponent<ScoreCollision>();
         var perfectScript = perfect.GetComponent<ScoreCollision>();
-        
-        /*
         if (perfectScript.active)
         {
-            Debug.Log("perfect");
-            var objText = Instantiate(message, spawnPosition.position, spawnPosition.rotation);
-            var mText = objText.GetComponent<TextMeshPro>();
-            mText.text = "Perfect";
-        } else if (goodScript.active)
+            var objText = Instantiate(message, spawnPosition.position + new Vector3(0, 0, 2), spawnPosition.rotation);
+            var mText = objText.GetComponent<ContainMessage>();
+            mText.message = "Perfect";
+        }
+        else if (goodScript.active)
         {
-            Debug.Log("good");
-            var objText = Instantiate(message, spawnPosition.position, spawnPosition.rotation);
-            var mText = objText.GetComponent<TextMeshPro>();
-            mText.text = "Good";
+            var objText = Instantiate(message, spawnPosition.position + new Vector3(0, 0, 2), spawnPosition.rotation);
+            var mText = objText.GetComponent<ContainMessage>();
+            mText.message = "Good";
         }
         else
         {
-            Debug.Log("strife");
-            var objText = Instantiate(message, spawnPosition.position, spawnPosition.rotation);
-            var mText = objText.GetComponent<TextMeshPro>();
-            mText.text = "Strife";
-        }
-        */
+            var objText = Instantiate(message, spawnPosition.position + new Vector3(0, 0, 2), spawnPosition.rotation);
+            var mText = objText.GetComponent<ContainMessage>();
+            mText.message = "Strife";
+        }*/
+
+        var mesh = this.GetComponent<MeshFilter>().sharedMesh;
 
         if (mesh != null && (this.currentSliceCount < this.sliceOptions.maxResliceCount))
         {
