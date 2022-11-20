@@ -86,7 +86,8 @@ public class Slice : MonoBehaviour
         var mesh = this.GetComponent<MeshFilter>().sharedMesh;
         var goodScript = good.GetComponent<ScoreCollision>();
         var perfectScript = perfect.GetComponent<ScoreCollision>();
-
+        
+        /*
         if (perfectScript.active)
         {
             Debug.Log("perfect");
@@ -107,7 +108,7 @@ public class Slice : MonoBehaviour
             var mText = objText.GetComponent<TextMeshPro>();
             mText.text = "Strife";
         }
-
+        */
 
         if (mesh != null && (this.currentSliceCount < this.sliceOptions.maxResliceCount))
         {
